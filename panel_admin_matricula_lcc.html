@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle Admin - Matrículas LCC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --font-sans: 'DM Sans', sans-serif;
+    --border-radius-lg: 20px;
+    --border-radius-md: 12px;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f4f8f5;
+    --color-text-primary: #1c2b22;
+    --color-text-secondary: #5a7563;
+    --color-border-tertiary: #d6ead9;
+  }
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8f2ea; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; font-family: var(--font-sans); }
+
+  .pa-root { font-family: var(--font-sans); width: 100%; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: var(--border-radius-lg); background: #1a5c2a; }
+  .pa-header { background: #1a5c2a; border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0; padding: 18px 16px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .pa-header-left { display: flex; align-items: center; gap: 12px; }
+  .pa-avatar { width: 44px; height: 44px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
+  .pa-header-title { color: #fff; font-size: 16px; font-weight: 500; margin: 0; }
+  .pa-header-sub { color: rgba(255,255,255,0.7); font-size: 12px; margin: 0; }
+  .pa-logout { color: rgba(255,255,255,0.8); font-size: 20px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .pa-stats { background: #1a5c2a; padding: 0 12px 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .pa-stat { background: rgba(255,255,255,0.12); border-radius: var(--border-radius-md); padding: 14px 12px; text-align: center; }
+  .pa-stat-icon { font-size: 22px; margin-bottom: 4px; }
+  .pa-stat-num { font-size: 26px; font-weight: 500; line-height: 1; margin-bottom: 2px; }
+  .pa-stat-label { font-size: 11px; }
+  .pa-stat.total .pa-stat-icon, .pa-stat.total .pa-stat-num, .pa-stat.total .pa-stat-label { color: rgba(255,255,255,0.85); }
+  .pa-stat.pendiente .pa-stat-icon { color: #f59e0b; } .pa-stat.pendiente .pa-stat-num { color: #f59e0b; } .pa-stat.pendiente .pa-stat-label { color: rgba(255,255,255,0.7); }
+  .pa-stat.aprobado .pa-stat-icon { color: #22c55e; } .pa-stat.aprobado .pa-stat-num { color: #22c55e; } .pa-stat.aprobado .pa-stat-label { color: rgba(255,255,255,0.7); }
+  .pa-stat.rechazado .pa-stat-icon { color: #f87171; } .pa-stat.rechazado .pa-stat-num { color: #f87171; } .pa-stat.rechazado .pa-stat-label { color: rgba(255,255,255,0.7); }
+
+  .pa-body { background: var(--color-background-primary); border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); border-top: none; }
+
+  .pa-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pa-modal-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0; }
+  .pa-close { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 18px; padding: 2px; }
+
+  .pa-fields { padding: 4px 16px 16px; }
+  .pa-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pa-row:last-child { border-bottom: none; }
+  .pa-field-label { font-size: 13px; color: var(--color-text-secondary); }
+  .pa-field-value { font-size: 13px; font-weight: 500; color: var(--color-text-primary); text-align: right; }
+  .badge-pendiente { background: #fef3c7; color: #92400e; font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+
+  .pa-actions { padding: 0 16px 12px; }
+  .pa-actions-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 10px; }
+  .pa-btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .pa-btn { border-radius: var(--border-radius-md); padding: 10px 4px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: opacity 0.15s; border: 1.5px solid; }
+  .pa-btn:active { opacity: 0.75; }
+  .pa-btn.btn-pend { background: transparent; color: #92400e; border-color: #f59e0b; }
+  .pa-btn.btn-apro { background: transparent; color: #14532d; border-color: #22c55e; }
+  .pa-btn.btn-rech { background: transparent; color: #7f1d1d; border-color: #f87171; }
+  .pa-btn-delete { width: 100%; background: #dc2626; color: #fff; border: none; border-radius: var(--border-radius-md); padding: 14px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; transition: opacity 0.15s; }
+  .pa-btn-delete:active { opacity: 0.8; }
+</style>
+
+<div class="pa-root">
+  <div class="pa-header">
+    <div class="pa-header-left">
+      <div class="pa-avatar"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
+      <div>
+        <p class="pa-header-title">Panel Admin</p>
+        <p class="pa-header-sub">MATRÍCULA LCC 2026</p>
+      </div>
+    </div>
+    <button class="pa-logout" aria-label="Cerrar sesión" onclick="window.location.href='index.html'"><i class="ti ti-logout" aria-hidden="true"></i></button>
+  </div>
+
+  <div class="pa-stats">
+    <div class="pa-stat total">
+      <div class="pa-stat-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+      <div class="pa-stat-num">4</div>
+      <div class="pa-stat-label">Total</div>
+    </div>
+    <div class="pa-stat pendiente">
+      <div class="pa-stat-icon"><i class="ti ti-clock" aria-hidden="true"></i></div>
+      <div class="pa-stat-num">2</div>
+      <div class="pa-stat-label">Pendiente</div>
+    </div>
+    <div class="pa-stat aprobado">
+      <div class="pa-stat-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></div>
+      <div class="pa-stat-num">1</div>
+      <div class="pa-stat-label">Aprobado</div>
+    </div>
+    <div class="pa-stat rechazado">
+      <div class="pa-stat-icon"><i class="ti ti-circle-x" aria-hidden="true"></i></div>
+      <div class="pa-stat-num">1</div>
+      <div class="pa-stat-label">Rechazado</div>
+    </div>
+  </div>
+
+  <div class="pa-body">
+    <div class="pa-modal-header">
+      <p class="pa-modal-title">Detalle de Matrícula</p>
+      <button class="pa-close" aria-label="Cerrar" onclick="window.location.href='panel_admin_lista_matricula.html'"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="pa-fields">
+      <div class="pa-row">
+        <span class="pa-field-label">DNI:</span>
+        <span class="pa-field-value">87654321</span>
+      </div>
+      <div class="pa-row">
+        <span class="pa-field-label">Apellidos:</span>
+        <span class="pa-field-value">Martinez Ruiz</span>
+      </div>
+      <div class="pa-row">
+        <span class="pa-field-label">Nombres:</span>
+        <span class="pa-field-value">Maria Elena</span>
+      </div>
+      <div class="pa-row">
+        <span class="pa-field-label">Tipo Ingreso:</span>
+        <span class="pa-field-value">Examen</span>
+      </div>
+      <div class="pa-row">
+        <span class="pa-field-label">Fecha:</span>
+        <span class="pa-field-value">2026-01-16</span>
+      </div>
+      <div class="pa-row">
+        <span class="pa-field-label">Estado:</span>
+        <span class="pa-field-value"><span class="badge-pendiente">Pendiente</span></span>
+      </div>
+    </div>
+
+    <div class="pa-actions">
+      <p class="pa-actions-label">Cambiar Estado:</p>
+      <div class="pa-btn-group">
+        <button class="pa-btn btn-pend"><i class="ti ti-clock" aria-hidden="true" style="font-size:15px"></i> Pendiente</button>
+        <button class="pa-btn btn-apro"><i class="ti ti-circle-check" aria-hidden="true" style="font-size:15px"></i> Aprobar</button>
+        <button class="pa-btn btn-rech"><i class="ti ti-circle-x" aria-hidden="true" style="font-size:15px"></i> Rechazar</button>
+      </div>
+      <button class="pa-btn-delete">
+        <i class="ti ti-trash" aria-hidden="true"></i>
+        Eliminar Registro
+      </button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

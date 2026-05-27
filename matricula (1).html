@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario de Matrícula</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --green-deep: #0d5c2e;
+    --green-mid: #1a7a3f;
+    --green-bright: #2ea855;
+    --green-light: #e8f5ec;
+    --green-accent: #5dd98a;
+    --gold: #c9a84c;
+    --cream: #fafcfb;
+    --text-dark: #0f1f16;
+    --text-mid: #3d5247;
+    --text-muted: #7a9585;
+    --border: #d3e6da;
+    --shadow: rgba(13, 92, 46, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px 48px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background decoration */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; right: -120px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(46,168,85,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -80px; left: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(13,92,46,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow:
+      0 2px 4px var(--shadow),
+      0 12px 32px rgba(13, 92, 46, 0.09),
+      0 0 0 1px rgba(13, 92, 46, 0.06);
+    animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(155deg, var(--green-deep) 0%, var(--green-mid) 60%, var(--green-bright) 100%);
+    padding: 32px 28px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* decorative circles */
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border: 40px solid rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: 60px;
+    width: 90px; height: 90px;
+    border: 24px solid rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+  }
+  .back-btn:hover { color: white; }
+  .back-btn svg { width: 16px; height: 16px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green-accent);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 2px rgba(93, 217, 138, 0.35);
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .header-sub {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.72);
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 45%;
+    background: linear-gradient(90deg, var(--green-bright), var(--green-accent));
+    border-radius: 0 2px 2px 0;
+    transition: width 0.5s ease;
+  }
+
+  /* ── FORM BODY ── */
+  .form-body {
+    padding: 28px 24px 20px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field {
+    margin-bottom: 14px;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .field:nth-child(1) { animation-delay: 0.05s; }
+  .field:nth-child(2) { animation-delay: 0.10s; }
+  .field:nth-child(3) { animation-delay: 0.15s; }
+  .field:nth-child(4) { animation-delay: 0.20s; }
+  .field:nth-child(5) { animation-delay: 0.25s; }
+  .field:nth-child(6) { animation-delay: 0.30s; }
+
+  label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--green-mid);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  input {
+    width: 100%;
+    padding: 13px 14px 13px 42px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dark);
+    background: var(--green-light);
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.22s ease;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder { color: var(--text-muted); font-weight: 300; }
+
+  input:focus {
+    background: white;
+    border-color: var(--green-bright);
+    box-shadow: 0 0 0 3px rgba(46, 168, 85, 0.12);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* ── SUBMIT ── */
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--green-mid) 0%, var(--green-bright) 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(26, 122, 63, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(26, 122, 63, 0.42);
+    background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(26, 122, 63, 0.3);
+  }
+
+  .submit-btn svg { width: 18px; height: 18px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 16px 24px;
+    background: var(--green-light);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .footer svg { color: var(--green-mid); width: 14px; height: 14px; flex-shrink: 0; }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a href="tipo-ingreso-lcc (1).html" class="back-btn">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Volver
+    </a>
+
+    <div class="badge">Ingreso por Convenio</div>
+
+    <div class="header-title">Formulario de<br>Matrícula</div>
+    <div class="header-sub">Completa los datos del estudiante</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-body">
+
+    <div class="section-label">Datos Personales</div>
+
+    <div class="field">
+      <label>Apellidos</label>
+      <div class="input-wrap">
+        <span class="input-icon">🪪</span>
+        <input type="text" placeholder="Apellidos completos" id="f-apellidos">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Nombres</label>
+      <div class="input-wrap">
+        <span class="input-icon">👤</span>
+        <input type="text" placeholder="Nombres completos" id="f-nombres">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Fecha de Nacimiento</label>
+      <div class="input-wrap">
+        <span class="input-icon">📅</span>
+        <input type="date" id="f-fecha">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Contacto</div>
+
+    <div class="field">
+      <label>Dirección</label>
+      <div class="input-wrap">
+        <span class="input-icon">📍</span>
+        <input type="text" placeholder="Dirección de residencia" id="f-direccion">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Teléfono</label>
+      <div class="input-wrap">
+        <span class="input-icon">📞</span>
+        <input type="tel" placeholder="Ej. 999 888 777" id="f-telefono">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Correo Electrónico</label>
+      <div class="input-wrap">
+        <span class="input-icon">✉️</span>
+        <input type="email" placeholder="correo@ejemplo.com" id="f-email">
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="handleSubmit()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+      </svg>
+      Subir Documentos
+    </button>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+    </svg>
+    Tu información está segura con nosotros
+  </div>
+
+</div>
+
+<script>
+  const fields = ['f-apellidos','f-nombres','f-fecha','f-direccion','f-telefono','f-email'];
+  const bar = document.getElementById('progress');
+
+  function updateProgress() {
+    const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
+    bar.style.width = Math.round((filled / fields.length) * 100) + '%';
+  }
+
+  fields.forEach(id => document.getElementById(id).addEventListener('input', updateProgress));
+
+  const params = new URLSearchParams(window.location.search);
+  const tipoParam = params.get('tipo') || 'convenio';
+  
+  // Update badge title based on query string
+  const badge = document.querySelector('.badge');
+  if (badge) {
+    if (tipoParam === 'examen') badge.textContent = 'Ingreso por Examen';
+    else if (tipoParam === 'academia') badge.textContent = 'Ingreso por Academia';
+    else badge.textContent = 'Ingreso por Convenio';
+  }
+
+  function handleSubmit() {
+    const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
+    if (filled < fields.length) {
+      alert('Por favor completa todos los campos antes de continuar.');
+      return;
+    }
+    window.location.href = "subir-documentos (1).html?tipo=" + tipoParam;
+  }
+</script>
+
+</body>
+</html>

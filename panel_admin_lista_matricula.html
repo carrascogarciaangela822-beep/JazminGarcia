@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin - Matrículas LCC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --font-sans: 'DM Sans', sans-serif;
+    --border-radius-lg: 20px;
+    --border-radius-md: 12px;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f4f8f5;
+    --color-text-primary: #1c2b22;
+    --color-text-secondary: #5a7563;
+    --color-border-tertiary: #d6ead9;
+  }
+  
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e8f2ea; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; font-family: var(--font-sans); }
+
+  .pa-root { font-family: var(--font-sans); width: 100%; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: var(--border-radius-lg); background: #1a5c2a; }
+  .pa-header { background: #1a5c2a; border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0; padding: 18px 16px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .pa-header-left { display: flex; align-items: center; gap: 12px; }
+  .pa-avatar { width: 44px; height: 44px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
+  .pa-header-title { color: #fff; font-size: 16px; font-weight: 500; margin: 0; }
+  .pa-header-sub { color: rgba(255,255,255,0.7); font-size: 12px; margin: 0; }
+  .pa-logout { color: rgba(255,255,255,0.8); font-size: 20px; background: none; border: none; cursor: pointer; padding: 4px; }
+
+  .pa-stats { background: #1a5c2a; padding: 0 12px 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pa-stat { background: rgba(255,255,255,0.13); border-radius: var(--border-radius-md); padding: 12px 6px; text-align: center; }
+  .pa-stat-icon { font-size: 18px; margin-bottom: 2px; }
+  .pa-stat-num { font-size: 22px; font-weight: 500; line-height: 1; margin-bottom: 2px; }
+  .pa-stat-label { font-size: 10px; }
+  .pa-stat.total .pa-stat-icon, .pa-stat.total .pa-stat-num, .pa-stat.total .pa-stat-label { color: rgba(255,255,255,0.85); }
+  .pa-stat.pendiente .pa-stat-icon, .pa-stat.pendiente .pa-stat-num { color: #f59e0b; } .pa-stat.pendiente .pa-stat-label { color: rgba(255,255,255,0.7); }
+  .pa-stat.aprobado .pa-stat-icon, .pa-stat.aprobado .pa-stat-num { color: #4ade80; } .pa-stat.aprobado .pa-stat-label { color: rgba(255,255,255,0.7); }
+  .pa-stat.rechazado .pa-stat-icon, .pa-stat.rechazado .pa-stat-num { color: #f87171; } .pa-stat.rechazado .pa-stat-label { color: rgba(255,255,255,0.7); }
+
+  .pa-body { background: var(--color-background-primary); border-radius: 20px 20px 0 0; margin-top: -10px; padding: 20px 16px 16px; border: 0.5px solid var(--color-border-tertiary); border-bottom: none; min-height: 280px; }
+
+  .pa-search-wrap { position: relative; margin-bottom: 14px; }
+  .pa-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary); font-size: 17px; pointer-events: none; }
+  .pa-search { width: 100%; box-sizing: border-box; padding: 10px 36px 10px 36px; border-radius: 20px; border: 1.5px solid #c8e6c9; background: #f1f8f2; font-size: 14px; color: var(--color-text-primary); outline: none; }
+  .pa-search:focus { border-color: #2e7d32; }
+  .pa-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 17px; padding: 0; display: none; }
+
+  .pa-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pa-filter { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); transition: all 0.15s; }
+  .pa-filter.active { background: #1a5c2a; color: #fff; border-color: #1a5c2a; }
+
+  .pa-list { display: flex; flex-direction: column; gap: 10px; }
+  .pa-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.1s; }
+  .pa-card:active { background: var(--color-background-secondary); }
+  .pa-card-info { flex: 1; }
+  .pa-card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 3px; }
+  .pa-card-dni { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 2px; }
+  .pa-card-date { font-size: 12px; color: var(--color-text-secondary); margin: 0; }
+  .pa-card-right { display: flex; align-items: center; gap: 6px; }
+  .badge { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
+  .badge-aprobado { background: #dcfce7; color: #14532d; }
+  .badge-pendiente { background: #fef3c7; color: #92400e; }
+  .badge-rechazado { background: #fee2e2; color: #7f1d1d; }
+  .pa-chevron { color: var(--color-text-secondary); font-size: 16px; }
+  .pa-empty { text-align: center; color: var(--color-text-secondary); font-size: 13px; padding: 32px 0; }
+</style>
+
+<div class="pa-root">
+  <div class="pa-header">
+    <div class="pa-header-left">
+      <div class="pa-avatar"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
+      <div>
+        <p class="pa-header-title">Panel Admin</p>
+        <p class="pa-header-sub">MATRÍCULA LCC 2026</p>
+      </div>
+    </div>
+    <button class="pa-logout" aria-label="Cerrar sesión" onclick="window.location.href='index.html'"><i class="ti ti-logout" aria-hidden="true"></i></button>
+  </div>
+
+  <div class="pa-stats">
+    <div class="pa-stat total">
+      <div class="pa-stat-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+      <div class="pa-stat-num" id="count-total">4</div>
+      <div class="pa-stat-label">Total</div>
+    </div>
+    <div class="pa-stat pendiente">
+      <div class="pa-stat-icon"><i class="ti ti-clock" aria-hidden="true"></i></div>
+      <div class="pa-stat-num" id="count-pendiente">2</div>
+      <div class="pa-stat-label">Pendiente</div>
+    </div>
+    <div class="pa-stat aprobado">
+      <div class="pa-stat-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></div>
+      <div class="pa-stat-num" id="count-aprobado">1</div>
+      <div class="pa-stat-label">Aprobado</div>
+    </div>
+    <div class="pa-stat rechazado">
+      <div class="pa-stat-icon"><i class="ti ti-circle-x" aria-hidden="true"></i></div>
+      <div class="pa-stat-num" id="count-rechazado">1</div>
+      <div class="pa-stat-label">Rechazado</div>
+    </div>
+  </div>
+
+  <div class="pa-body">
+    <div class="pa-search-wrap">
+      <i class="ti ti-search pa-search-icon" aria-hidden="true"></i>
+      <input class="pa-search" id="searchInput" type="text" placeholder="Buscar por nombre o DNI..." value="99887766" />
+      <button class="pa-clear" id="clearBtn" aria-label="Limpiar búsqueda"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="pa-filters">
+      <button class="pa-filter active" data-filter="todos">Todos</button>
+      <button class="pa-filter" data-filter="pendiente">Pendiente</button>
+      <button class="pa-filter" data-filter="aprobado">Aprobado</button>
+      <button class="pa-filter" data-filter="rechazado">Rechazado</button>
+    </div>
+
+    <div class="pa-list" id="paList"></div>
+  </div>
+</div>
+
+<script>
+const registros = [
+  { nombre: "Flores Mendez, Luis Miguel", dni: "99887766", tipo: "Convenio", fecha: "2026-01-19", estado: "aprobado" },
+  { nombre: "Martinez Ruiz, Maria Elena", dni: "87654321", tipo: "Examen", fecha: "2026-01-16", estado: "pendiente" },
+  { nombre: "Garcia Lopez, Carlos", dni: "11223344", tipo: "Traslado", fecha: "2026-01-20", estado: "pendiente" },
+  { nombre: "Torres Silva, Ana", dni: "55667788", tipo: "Examen", fecha: "2026-01-22", estado: "rechazado" },
+];
+
+let filtroActivo = "todos";
+let busqueda = "99887766";
+
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearBtn");
+const list = document.getElementById("paList");
+
+function badgeHTML(estado) {
+  const icons = { aprobado: "ti-circle-check", pendiente: "ti-clock", rechazado: "ti-circle-x" };
+  const labels = { aprobado: "Aprobado", pendiente: "Pendiente", rechazado: "Rechazado" };
+  return `<span class="badge badge-${estado}"><i class="ti ${icons[estado]}" aria-hidden="true" style="font-size:13px"></i> ${labels[estado]}</span>`;
+}
+
+function render() {
+  const q = busqueda.toLowerCase();
+  const filtered = registros.filter(r => {
+    const matchFilter = filtroActivo === "todos" || r.estado === filtroActivo;
+    const matchSearch = !q || r.nombre.toLowerCase().includes(q) || r.dni.includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  clearBtn.style.display = busqueda ? "block" : "none";
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="pa-empty"><i class="ti ti-search-off" style="font-size:28px;display:block;margin:0 auto 8px" aria-hidden="true"></i>Sin resultados</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(r => `
+    <div class="pa-card" onclick="window.location.href='panel_admin_matricula_lcc.html'">
+      <div class="pa-card-info">
+        <p class="pa-card-name">${r.nombre}</p>
+        <p class="pa-card-dni">DNI: ${r.dni}</p>
+        <p class="pa-card-date">${r.tipo} &nbsp; ${r.fecha}</p>
+      </div>
+      <div class="pa-card-right">
+        ${badgeHTML(r.estado)}
+        <i class="ti ti-chevron-right pa-chevron" aria-hidden="true"></i>
+      </div>
+    </div>
+  `).join("");
+}
+
+searchInput.addEventListener("input", e => { busqueda = e.target.value; render(); });
+clearBtn.addEventListener("click", () => { busqueda = ""; searchInput.value = ""; render(); });
+
+document.querySelectorAll(".pa-filter").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".pa-filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filtroActivo = btn.dataset.filter;
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Matrícula LCC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green:      #008a2e;
+      --green-dark: #006622;
+      --green-mid:  #00b33c;
+      --green-pale: #f3fbf5;
+      --border:     #d6e8da;
+      --muted:      #6b7a70;
+      --text:       #1a2e1f;
+      --white:      #ffffff;
+      --bg:         #f0f4f1;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── STATUS BAR SPACER ── */
+    .status-bar {
+      height: env(safe-area-inset-top, 12px);
+      background: var(--green-dark);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(160deg, #006622 0%, #009932 60%, #00c040 100%);
+      padding: 16px 20px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .back-btn {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.15);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .header-logo {
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .logo-badge {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.2);
+      border: 1.5px solid rgba(255,255,255,.4);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .logo-name {
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .secure-chip {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.15);
+      border-radius: 999px;
+      padding: 5px 11px;
+      color: rgba(255,255,255,.9);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .header-body {
+      position: relative; z-index: 1;
+    }
+
+    .step-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      letter-spacing: .04em;
+    }
+
+    .step-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #6eff9e;
+    }
+
+    .header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      color: rgba(255,255,255,.8);
+      font-size: 14px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      margin-top: -40px;
+      position: relative;
+      z-index: 10;
+      padding: 28px 20px 100px;
+      min-height: calc(100vh - 180px);
+    }
+
+    .card-handle {
+      width: 40px; height: 4px;
+      background: #dde8e1;
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+
+    /* Progress */
+    .progress-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .prog-step {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+    }
+
+    .prog-step.active { background: var(--green); }
+    .prog-step.done   { background: var(--green-mid); }
+
+    /* Section label */
+    .section-label {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* Field */
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      padding-left: 2px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 17px; height: 17px;
+      stroke: #b8ccbf;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      padding: 14px 14px 14px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      -webkit-appearance: none;
+      transition: border-color .2s, background .2s;
+    }
+
+    .input-wrap input::placeholder { color: #c0d0c6; }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: var(--green);
+      background: var(--green-pale);
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #b8ccbf;
+      font-size: 11px;
+    }
+
+    /* Row de dos columnas */
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── BOTTOM FIXED BTN ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border: none;
+      background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      color: #fff;
+      padding: 17px;
+      border-radius: 16px;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(0,100,34,.28);
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .15s;
+    }
+
+    .submit-btn:active { opacity: .85; }
+    .submit-btn:disabled { opacity: .6; }
+
+    .btn-arrow {
+      width: 26px; height: 26px;
+      background: rgba(255,255,255,.2);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="status-bar"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div class="header-logo">
+      <div class="logo-badge">LCC</div>
+      <span class="logo-name">LCC</span>
+    </div>
+    <div class="secure-chip">🔒 Seguro</div>
+  </div>
+  <div class="header-body">
+    <div class="step-badge"><span class="step-dot"></span> ACADEMIA</div>
+    <h1>Formulario<br>de Matrícula</h1>
+    <p>Ingresa tus datos para continuar</p>
+  </div>
+</div>
+
+<!-- CARD -->
+<div class="card">
+  <div class="card-handle"></div>
+
+  <!-- Progress -->
+  <div class="progress-row">
+    <div class="prog-step done"></div>
+    <div class="prog-step active"></div>
+    <div class="prog-step"></div>
+    <div class="prog-step"></div>
+  </div>
+
+  <div class="section-label">Datos personales</div>
+
+  <div class="field">
+    <label>Apellidos</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <input type="text" placeholder="Apellidos completos">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Nombres</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <input type="text" placeholder="Nombres completos">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Fecha de nacimiento</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <input type="date">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Contacto</div>
+
+  <div class="field">
+    <label>Dirección</label>
+    <div class="input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <input type="text" placeholder="Av. / Jr. / Calle...">
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="field">
+      <label>Teléfono</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <input type="tel" placeholder="9XX XXX XXX">
+      </div>
+    </div>
+    <div class="field">
+      <label>Correo</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <input type="email" placeholder="correo@...">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM BTN -->
+<div class="bottom-bar">
+  <button class="submit-btn" onclick="handleSubmit(this)">
+    Continuar
+    <div class="btn-arrow">→</div>
+  </button>
+</div>
+
+<script>
+  function handleSubmit(btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Procesando...';
+    setTimeout(() => {
+      btn.innerHTML = '✅ ¡Listo! Continuando...';
+    }, 1500);
+  }
+</script>
+
+</body>
+</html>

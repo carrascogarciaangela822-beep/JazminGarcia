@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subir Documentos — LCC</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #02561f;
+    --moss: #1a7a3a;
+    --sage: #4caf70;
+    --mint: #d4f0dc;
+    --cream: #f9faf7;
+    --parchment: #f0f2ec;
+    --ink: #111812;
+    --muted: #6b7b6e;
+    --border: #d8e6dd;
+    --white: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(2,86,31,.06);
+    --shadow-md: 0 8px 24px rgba(2,86,31,.10);
+    --shadow-lg: 0 20px 48px rgba(2,86,31,.14);
+    --radius: 24px;
+    --radius-sm: 14px;
+  }
+
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--parchment);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(2,86,31,.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 90% 80%, rgba(76,175,112,.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    animation: fadeUp .6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LEFT PANEL ── */
+  .panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(140deg, var(--forest) 0%, #0a8c3a 100%);
+    padding: 36px 40px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: -60px; bottom: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: 40px; top: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.035);
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,.7);
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: color .2s;
+    text-decoration: none;
+  }
+
+  .back-btn:hover { color: white; }
+  .back-btn svg { width: 16px; height: 16px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(4px);
+    color: #c6f0d4;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .5px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #6ddb90;
+    box-shadow: 0 0 0 3px rgba(109,219,144,.25);
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 44px;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .hero p {
+    color: rgba(255,255,255,.72);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,.15);
+    margin-top: 28px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #6ddb90, #a8f0be);
+    border-radius: 2px;
+    animation: progressIn .8s .3s ease both;
+  }
+
+  @keyframes progressIn {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+
+  /* Content */
+  .body {
+    padding: 36px 40px 32px;
+    flex: 1;
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+  }
+
+  .section-head h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .section-head p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  .tally {
+    background: var(--mint);
+    color: var(--forest);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* Doc cards */
+  .doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .doc-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color .25s, box-shadow .25s, transform .2s;
+    background: var(--white);
+    animation: cardIn .4s ease both;
+  }
+
+  .doc-card.completed {
+    border-color: #4ade80;
+  }
+
+  .doc-card:nth-child(1) { animation-delay: .05s; }
+  .doc-card:nth-child(2) { animation-delay: .10s; }
+  .doc-card:nth-child(3) { animation-delay: .15s; }
+  .doc-card:nth-child(4) { animation-delay: .20s; }
+  .doc-card:nth-child(5) { animation-delay: .25s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .doc-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: #e8f5ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .doc-card.completed .icon-wrap {
+    background: #0ea5e9; /* we will override this inline if needed */
+    background: var(--moss);
+    color: white;
+    border-radius: 14px;
+  }
+
+  .doc-info {
+    flex: 1;
+  }
+
+  .doc-info h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .req-asterisk { color: #ef4444; }
+
+  .tag-req {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .tag-listo {
+    background: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .doc-info .desc {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .btn-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--white);
+    border: 1px solid #c2dfc9;
+    color: var(--forest);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-outline:hover {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+
+  .file-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+
+  .file-box-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--moss);
+    font-weight: 500;
+  }
+
+  .remove-btn {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: #fee2e2;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+    font-size: 18px;
+    line-height: 1;
+    transition: all .2s;
+  }
+
+  .remove-btn:hover {
+    background: #fca5a5;
+    color: #991b1b;
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--forest), var(--moss));
+    color: white;
+    border: none;
+    padding: 18px 24px;
+    border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform .2s, box-shadow .2s, filter .2s;
+    box-shadow: 0 6px 20px rgba(2,86,31,.28);
+    letter-spacing: .2px;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(2,86,31,.36);
+    filter: brightness(1.05);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .submit-btn svg {
+    width: 20px; height: 20px;
+  }
+
+  .note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  /* Footer */
+  .panel-footer {
+    padding: 16px 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .panel-footer span {
+    font-size: 12px;
+    color: #aab5ac;
+  }
+
+  .panel-footer a {
+    font-size: 12px;
+    color: var(--moss);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .panel-footer a:hover { text-decoration: underline; }
+
+  /* ── RIGHT PANEL ── */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .s-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp .6s ease both;
+  }
+
+  .s-card:nth-child(1) { animation-delay: .1s; }
+  .s-card:nth-child(2) { animation-delay: .2s; }
+  .s-card:nth-child(3) { animation-delay: .3s; }
+
+  .avatar-wrap {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+
+  .avatar-circle {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mint), #c0e8cc);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    box-shadow: 0 0 0 6px rgba(76,175,112,.12);
+  }
+
+  .avatar-wrap h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .avatar-wrap p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .step-label {
+    display: inline-block;
+    background: var(--mint);
+    color: var(--forest);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-top: 12px;
+  }
+
+  .s-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .s-card h4 span {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--mint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .s-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .s-card .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--moss);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: gap .2s;
+  }
+
+  .s-card .link:hover { gap: 8px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .hero h1 { font-size: 34px; }
+    .body { padding: 28px 24px 24px; }
+    .hero { padding: 28px 24px 36px; }
+    .panel-footer { padding: 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+
+    <div class="hero">
+      <a href="matricula (1).html" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver al portal
+      </a>
+
+      <div class="badge">Ingreso por Examen</div>
+
+      <h1>Subir<br><em>Documentos</em></h1>
+      <p>Adjunta los documentos requeridos para continuar</p>
+
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <div class="section-head">
+        <div>
+          <h2>Documentos Requeridos</h2>
+          <p>Sube todos los archivos para completar tu matrícula.</p>
+        </div>
+        <div class="tally">5 / 5</div>
+      </div>
+
+      <div class="doc-list">
+
+        <!-- Card 1: DNI (Pending) -->
+        <div class="doc-card" id="card-dni">
+          <div class="doc-left">
+            <div class="icon-wrap" id="icon-dni" style="background:#e8f5ec;">🪪</div>
+            <div class="doc-info">
+              <h3 id="title-dni">DNI <span class="req-asterisk">*</span> <span class="tag-req">Requerido</span></h3>
+              <p class="desc">Original y copia del Documento Nacional de Identidad</p>
+              <div class="btn-actions" id="actions-dni">
+                <button class="btn-outline" onclick="mostrarOpcionesDNI()">☁️ Subir documento</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Certificado (Pending) -->
+        <div class="doc-card" id="card-cert">
+          <div class="doc-left">
+            <div class="icon-wrap" id="icon-cert" style="background:#f1f5f9;">📄</div>
+            <div class="doc-info">
+              <h3 id="title-cert">Certificado de Estudios <span class="req-asterisk">*</span> <span class="tag-req">Requerido</span></h3>
+              <p class="desc">Certificado de estudios de secundaria completa</p>
+              <div class="btn-actions" id="actions-cert">
+                <button class="btn-outline" onclick="completarDoc('card-cert', 'Certificado de Estudios', 'Foto_certificado.jpg', 'icon-cert', 'title-cert', 'actions-cert')">📷 Tomar foto</button>
+                <button class="btn-outline" onclick="completarDoc('card-cert', 'Certificado de Estudios', 'Archivo_certificado.jpg', 'icon-cert', 'title-cert', 'actions-cert')">📁 Archivo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Partida (Completed) -->
+        <div class="doc-card completed">
+          <div class="doc-left">
+            <div class="icon-wrap">✓</div>
+            <div class="doc-info">
+              <h3>Partida de Nacimiento <span class="tag-listo">✓ Listo</span></h3>
+              <p class="desc">Partida o acta de nacimiento original</p>
+              <div class="file-box">
+                <div class="file-box-name"><span style="color:var(--sage); font-weight:bold; font-size:15px;">✓</span> Archivo_partida.jpg</div>
+                <button class="remove-btn" title="Quitar">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Fotos Carnet (Completed) -->
+        <div class="doc-card completed">
+          <div class="doc-left">
+            <div class="icon-wrap">✓</div>
+            <div class="doc-info">
+              <h3>Fotos Carnet <span class="tag-listo">✓ Listo</span></h3>
+              <p class="desc">Fotos tamaño carnet (cantidad según requerimiento)</p>
+              <div class="file-box">
+                <div class="file-box-name"><span style="color:var(--sage); font-weight:bold; font-size:15px;">✓</span> Foto_fotos.jpg</div>
+                <button class="remove-btn" title="Quitar">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Dynamic (Completed) -->
+        <div class="doc-card completed" id="cardDinamica">
+          <div class="doc-left">
+            <div class="icon-wrap">✓</div>
+            <div class="doc-info">
+              <h3 id="cdTitle">Comprobante de Pago <span class="tag-listo">✓ Listo</span></h3>
+              <p class="desc" id="cdDesc">Documento que acredite el pago</p>
+              <div class="file-box">
+                <div class="file-box-name"><span style="color:var(--sage); font-weight:bold; font-size:15px;">✓</span> Archivo_comprobante.jpg</div>
+                <button class="remove-btn" title="Quitar">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="submit-btn" onclick="enviarMatricula()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Enviar Matrícula
+      </button>
+
+      <p class="note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Tus datos están protegidos con cifrado SSL
+      </p>
+
+    </div>
+
+    <div class="panel-footer">
+      <span>LCC · Sistema de Matrícula Digital</span>
+      <a href="#">Política de privacidad</a>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="s-card">
+      <div class="avatar-wrap">
+        <div class="avatar-circle">🎓</div>
+        <h3>Todo listo</h3>
+        <p>Todos tus documentos han sido adjuntados correctamente.</p>
+        <div class="step-label">Paso 3 de 3</div>
+      </div>
+    </div>
+
+    <div class="s-card">
+      <h4>
+        <span>🔒</span>
+        Tu información está segura
+      </h4>
+      <p>Protegemos tus datos personales con los más altos estándares de seguridad y encriptación.</p>
+    </div>
+
+    <div class="s-card">
+      <h4>
+        <span>🎧</span>
+        ¿Necesitas ayuda?
+      </h4>
+      <p>Nuestro equipo de soporte está disponible para guiarte en cada paso del proceso.</p>
+      <a href="#" class="link">Contactar soporte →</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Update badge title based on query string
+  const params = new URLSearchParams(window.location.search);
+  const tipoParam = params.get('tipo') || 'convenio';
+  const badge = document.querySelector('.badge');
+  if (badge) {
+    if (tipoParam === 'examen') badge.innerHTML = 'Ingreso por Examen';
+    else if (tipoParam === 'academia') badge.innerHTML = 'Ingreso por Academia';
+    else badge.innerHTML = 'Ingreso por Convenio';
+  }
+
+  // Update dynamic card text based on query string
+  const cdTitle = document.getElementById('cdTitle');
+  const cdDesc = document.getElementById('cdDesc');
+  if (cdTitle && cdDesc) {
+    if (tipoParam === 'examen') {
+      cdTitle.innerHTML = 'Comprobante de Pago <span class="tag-listo">✓ Listo</span>';
+      cdDesc.innerText = 'Comprobante del derecho a examen y matrícula';
+    } else if (tipoParam === 'academia') {
+      cdTitle.innerHTML = 'Comprobante de Pago <span class="tag-listo">✓ Listo</span>';
+      cdDesc.innerText = 'Comprobante de pago academia y matrícula';
+    } else {
+      cdTitle.innerHTML = 'Comprobante de Convenio <span class="tag-listo">✓ Listo</span>';
+      cdDesc.innerText = 'Documento que acredite el convenio institucional';
+    }
+  }
+
+  // Interactive Flow Functions
+  function mostrarOpcionesDNI() {
+    const actions = document.getElementById('actions-dni');
+    actions.innerHTML = `
+      <button class="btn-outline" onclick="completarDoc('card-dni', 'DNI', 'Foto_dni.jpg', 'icon-dni', 'title-dni', 'actions-dni')">📷 Tomar foto</button>
+      <button class="btn-outline" onclick="completarDoc('card-dni', 'DNI', 'Archivo_dni.jpg', 'icon-dni', 'title-dni', 'actions-dni')">📁 Archivo</button>
+    `;
+  }
+
+  function completarDoc(cardId, titleText, fileName, iconId, titleId, actionsId) {
+    const card = document.getElementById(cardId);
+    card.classList.add('completed');
+    
+    // Change Icon
+    const icon = document.getElementById(iconId);
+    icon.style.background = ''; // reset inline style to inherit completed styles
+    icon.innerHTML = '✓';
+
+    // Change Title
+    const title = document.getElementById(titleId);
+    title.innerHTML = `${titleText} <span class="tag-listo">✓ Listo</span>`;
+
+    // Replace Actions with File Box
+    const actions = document.getElementById(actionsId);
+    actions.className = 'file-box';
+    actions.innerHTML = `
+      <div class="file-box-name"><span style="color:var(--sage); font-weight:bold; font-size:15px;">✓</span> ${fileName}</div>
+      <button class="remove-btn" title="Quitar" onclick="removerDoc(this)">×</button>
+    `;
+  }
+
+  // Remove card on × click (for initially completed cards)
+  document.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.addEventListener('click', function() { removerDoc(this); });
+  });
+
+  function removerDoc(btn) {
+    const card = btn.closest('.doc-card');
+    card.style.transition = 'opacity .25s, transform .25s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(-10px)';
+    setTimeout(() => card.remove(), 260);
+  }
+
+  function enviarMatricula() {
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get('tipo') || 'convenio';
+    window.location.href = "matricula-exitosa-1 (1).html?tipo=" + tipo;
+  }
+</script>
+
+</body>
+</html>

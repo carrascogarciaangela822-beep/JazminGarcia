@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel LCC — Matrícula</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-deep:   #1b4332;
+    --green-mid:    #2d6a4f;
+    --green-bright: #40916c;
+    --green-light:  #b7e4c7;
+    --cream:        #f8f5f0;
+    --cream-dark:   #ede9e2;
+    --ink:          #1a1a1a;
+    --ink-soft:     #4a4a4a;
+    --gold:         #c9a84c;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--ink);
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 100%, rgba(45,106,79,.10) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90%  0%,  rgba(27,67,50,.08)  0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--green-deep);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 68px;
+    box-shadow: 0 4px 24px rgba(27,67,50,.35);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: .15em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1);   opacity: 1; }
+    50%      { transform: scale(1.5); opacity: .6; }
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    padding: 7px 16px 7px 10px;
+    border-radius: 99px;
+    color: rgba(255,255,255,.9);
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .02em;
+  }
+
+  .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #e8c56a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--green-deep);
+  }
+
+  /* ── MAIN ── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 72px 32px 100px;
+  }
+
+  /* ── HERO TEXT ── */
+  .hero {
+    text-align: center;
+    margin-bottom: 72px;
+    animation: fadeUp .7s ease both;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    background: rgba(64,145,108,.1);
+    border: 1px solid rgba(64,145,108,.25);
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.07;
+    color: var(--green-deep);
+    letter-spacing: -.02em;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--green-bright);
+  }
+
+  .hero p {
+    margin-top: 18px;
+    font-size: 1.02rem;
+    font-weight: 300;
+    color: var(--ink-soft);
+    letter-spacing: .01em;
+    line-height: 1.7;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+    animation: fadeUp .7s .1s ease both;
+  }
+
+  .divider-line { flex: 1; height: 1px; background: var(--cream-dark); }
+
+  .divider-label {
+    font-size: .7rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #aaa;
+    white-space: nowrap;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 18px;
+    padding: 40px 36px;
+    border: 1px solid var(--cream-dark);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .32s cubic-bezier(.22,1,.36,1),
+                box-shadow .32s cubic-bezier(.22,1,.36,1),
+                border-color .2s;
+    animation: fadeUp .7s ease both;
+  }
+
+  .card:nth-child(1) { animation-delay: .15s; }
+  .card:nth-child(2) { animation-delay: .27s; }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(45,106,79,.06), transparent 60%);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(27,67,50,.14);
+    border-color: rgba(64,145,108,.3);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  /* accent stripe */
+  .card-stripe {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-bright));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s cubic-bezier(.22,1,.36,1);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .card:hover .card-stripe { transform: scaleX(1); }
+
+  .card-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    box-shadow: 0 6px 20px rgba(27,67,50,.25);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+
+  .card:hover .card-icon { transform: scale(1.08) rotate(-4deg); }
+
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    margin-bottom: 10px;
+    letter-spacing: -.01em;
+  }
+
+  .card p {
+    font-size: .88rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 36px; right: 36px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--cream-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-mid);
+    font-size: 1rem;
+    transition: background .25s, border-color .25s, transform .3s;
+  }
+
+  .card:hover .card-arrow {
+    background: var(--green-deep);
+    border-color: var(--green-deep);
+    color: white;
+    transform: translate(2px,-2px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 28px;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    color: #b0b0b0;
+    text-transform: uppercase;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    header { padding: 0 20px; }
+    main   { padding: 48px 20px 80px; }
+    .card  { padding: 30px 26px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" style="text-decoration:none;">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      MATRÍCULA LCC
+    </div>
+  </a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="user-pill">
+      <div class="avatar">JP</div>
+      Juan Pérez
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,0.55);font-size:12px;text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">Salir ↩</a>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Portal Estudiantil</div>
+    <h1>Bienvenido,<br><em>Juan.</em></h1>
+    <p>Gestiona tu proceso de matrícula de forma rápida y segura.</p>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-label">Acciones disponibles</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards">
+
+    <a href="tipo-ingreso-lcc (1).html" class="card" style="text-decoration:none;">
+      <div class="card-stripe"></div>
+      <div class="card-icon">📄</div>
+      <h3>Registrar matrícula</h3>
+      <p>Inicia o continúa tu proceso de inscripción para el período académico actual.</p>
+      <div class="card-arrow">↗</div>
+    </a>
+
+    <a href="estado-matricula (1).html" class="card" style="text-decoration:none;">
+      <div class="card-stripe"></div>
+      <div class="card-icon">📊</div>
+      <h3>Ver estado</h3>
+      <p>Consulta el progreso y la situación actual de tu solicitud de matrícula.</p>
+      <div class="card-arrow">↗</div>
+    </a>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>© 2026 LCC — Sistema de Matrícula Estudiantil</footer>
+
+</body>
+</html>
